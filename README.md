@@ -1,7 +1,7 @@
 
 > Open this page at [https://meekimobile.github.io/pxt-esp01-wifi-module/](https://meekimobile.github.io/pxt-esp01-wifi-module/)
 <br/>
-![ESP01](icon.png "ESP01")
+![alt text](icon.png "ESP01")
 <br/>
 ## Use as Extension
 
