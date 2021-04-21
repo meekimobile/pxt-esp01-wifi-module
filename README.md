@@ -1,6 +1,6 @@
 
 > Open this page at [https://meekimobile.github.io/pxt-esp01-wifi-module/](https://meekimobile.github.io/pxt-esp01-wifi-module/)
-MakeCode extension for ESP01:
+MakeCode extension for [ESP01]:
 <br/>
 ![alt text](icon.png "ESP01")
 <br/>
