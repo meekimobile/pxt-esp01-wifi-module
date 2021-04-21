@@ -1,0 +1,22 @@
+{
+    "name": "ESP01 WiFi Module",
+    "description": "",
+    "dependencies": {
+        "core": "*",
+        "microphone": "*",
+        "radio": "*"
+    },
+    "files": [
+        "main.ts",
+        "README.md"
+    ],
+    "testFiles": [
+        "test.ts"
+    ],
+    "public": true,
+    "supportedTargets": [
+        "microbit"
+    ],
+    "preferredEditor": "tsprj",
+    "languageRestriction": "javascript-only"
+}
