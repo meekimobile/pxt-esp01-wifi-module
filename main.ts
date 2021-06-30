@@ -28,9 +28,19 @@ namespace WifiModule {
     let is_connected:boolean = false
     let is_busy:boolean = false
 
-    function executeAtCommand(command: string, waitMs: number) {
-        serial.writeString("" + command + newLine)
-        basic.pause(waitMs)
+    /**
+     * Execute AT command
+     * @param command AT command
+     * @param waitMs Waiting in milliseconds
+     */
+    //% block="AT command|Command %command|Wait in ms %waitMs"
+    export function executeAtCommand(command: string, waitMs: number) {
+        if (isConnected) {
+            serial.writeString("" + command + newLine)
+            basic.pause(waitMs)
+        } else {
+            basic.showIcon(IconNames.No)
+        }
     }
 
     /**
@@ -75,6 +85,10 @@ namespace WifiModule {
      */
     //% block="Read from Blynk with|Token %blynkKey|Pin %pin"
     export function readBlynkPinValue(blynkKey: string, pin: string): string {        
+        if (!isConnected) {
+            basic.showIcon(IconNames.No)
+            return "Not connected"
+        }
         if (is_busy) {
             return ""
         }
@@ -98,6 +112,10 @@ namespace WifiModule {
      */
     //% block="Write to Blynk with|Token %blynkKey|Pin %pin|Value %value"
     export function writeBlynkPinValue(blynkKey: string, pin: string, value: string) {
+        if (!isConnected) {
+            basic.showIcon(IconNames.No)
+            return
+        }
         if (is_busy) {
             return
         }
