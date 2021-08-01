@@ -49,13 +49,15 @@ namespace WifiModule {
      * @param password Password
      */
     //% block="Connect WiFi with|RxPin %rxPin|TxPin %txPin|SSID %ssid|Password %passsword"
-    export function setupWifi(rxPin: SerialPin, txPin: SerialPin, ssid: string, password: string) {
+    export function connectWifi(rxPin: SerialPin, txPin: SerialPin, ssid: string, password: string) {
         serial.redirect(rxPin, txPin, BaudRate.BaudRate115200)
         serial.onDataReceived(serial.delimiters(Delimiters.NewLine), function () {
             let data: string;
             
             let chunk = serial.readString()
-            if (chunk.includes("[")) {
+            if (chunk.includes("WIFI GOT IP")) {
+                is_connected = true
+            } else if (chunk.includes("[")) {
                 data = chunk.slice(chunk.indexOf("["))
                 response = response + data
             } else if (chunk.includes("]")) {
@@ -67,7 +69,6 @@ namespace WifiModule {
         executeAtCommand("AT+RST", 1000)
         executeAtCommand("AT+CWMODE=1", 1000)
         executeAtCommand("AT+CWJAP=\"" + ssid + "\",\"" + password + "\"", 3000)
-        is_connected = true
     }
 
     /**
