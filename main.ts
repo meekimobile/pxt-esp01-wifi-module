@@ -36,6 +36,7 @@ namespace WifiModule {
     export function executeAtCommand(command: string, waitMs: number) {
         let newLine:string = "\r\n"
         if (isConnected) {
+            response = ""
             is_busy = true
             serial.writeString("" + command + newLine)
             while (is_busy) {
@@ -55,34 +56,32 @@ namespace WifiModule {
     //% block="Connect WiFi with|RxPin %rxPin|TxPin %txPin|SSID %ssid|Password %passsword"
     export function connectWifi(rxPin: SerialPin, txPin: SerialPin, ssid: string, password: string) {
         serial.redirect(rxPin, txPin, BaudRate.BaudRate115200)
+        serial.setRxBufferSize(32)
         serial.onDataReceived(serial.delimiters(Delimiters.NewLine), function () {
             let data: string;
             
             let chunk = serial.readString()
+            // let chunk = serial.readUntil(serial.delimiters(Delimiters.NewLine))
+            // basic.showString("c" + chunk.length + ":" + chunk.substr(chunk.length - 4))
             response = response + chunk
 
-            if (response.includes("WIFI GOT IP")) {
-                is_connected = true 
-            }
             if (response.includes("OK")) {
                 is_busy = false
             } else if (response.includes("FAIL")) {
                 is_busy = false
             } else if (response.includes("ERROR")) {
                 is_busy = false
-/*            } else if (chunk.includes("[")) {
-                data = chunk.slice(chunk.indexOf("["))
-                response = response + data
-                is_busy = false
-            } else if (chunk.includes("]")) {
-                response = response + chunk
-                is_busy = false    */
             }        
         })
+
         executeAtCommand("AT+RESTORE", 1000)
         executeAtCommand("AT+RST", 1000)
         executeAtCommand("AT+CWMODE=1", 1000)
-        executeAtCommand("AT+CWJAP=\"" + ssid + "\",\"" + password + "\"", 3000)
+        executeAtCommand("AT+CWJAP=\"" + ssid + "\",\"" + password + "\"", 1000)
+        // basic.showString(response)
+        if (response.includes("WIFI GOT IP")) {
+            is_connected = true
+        }
     }
 
     /**
@@ -109,16 +108,13 @@ namespace WifiModule {
         if (is_busy) {
             return ""
         }
-        is_busy = true
-        response = ""
         executeAtCommand("AT+CIPSTART=\"TCP\",\"blynk-cloud.com\",80", 1000)
         let command:string = "GET /" + blynkKey + "/get/" + pin + " HTTP/1.1" + newLine + "Host: blynk-cloud.com" + newLine + newLine
         executeAtCommand("AT+CIPSEND=" + ("" + command.length), 0)
         executeAtCommand(command, 1000)
-        let v = response 
-      //  let v = response.slice(response.indexOf("[") + 2, response.indexOf("]") - 1) // Extract value
+        // ISSUE: Missing chunk
+        let v = response.slice(response.indexOf("[") + 2, response.indexOf("]") - 1) // Extract value
         executeAtCommand("AT+CIPCLOSE", 1000)
-        is_busy = false
         return v
     }
 
@@ -139,14 +135,11 @@ namespace WifiModule {
         if (is_busy) {
             return
         }
-        is_busy = true
-        response = ""
         executeAtCommand("AT+CIPSTART=\"TCP\",\"blynk-cloud.com\",80", 1000)
         let command:string = "GET /" + blynkKey + "/update/" + pin + "?value=" + ("" + value) + " HTTP/1.1" + newLine + "Host: blynk-cloud.com" + newLine + newLine
         executeAtCommand("AT+CIPSEND=" + ("" + command.length), 0)
         executeAtCommand(command, 1000)
         executeAtCommand("AT+CIPCLOSE", 1000)
-        is_busy = false
     }
 
 }
