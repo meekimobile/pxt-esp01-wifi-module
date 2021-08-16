@@ -24,7 +24,6 @@
 //% weight=100 color=#0fbc11 icon="\uf1eb" block="WiFi Module"
 namespace WifiModule {
     let response:string = ""
-    let newLine:string = "\r" + "\n"
     let is_connected:boolean = false
     let is_busy:boolean = false
 
@@ -35,8 +34,13 @@ namespace WifiModule {
      */
     //% block="AT command|Command %command|Wait in ms %waitMs"
     export function executeAtCommand(command: string, waitMs: number) {
+        let newLine:string = "\r\n"
         if (isConnected) {
+            is_busy = true
             serial.writeString("" + command + newLine)
+            while (is_busy) {
+                basic.pause(100)
+            }
             basic.pause(waitMs)
         } else {
             basic.showIcon(IconNames.No)
@@ -55,15 +59,25 @@ namespace WifiModule {
             let data: string;
             
             let chunk = serial.readString()
-            if (chunk.includes("WIFI GOT IP")) {
-                is_connected = true
-            } else if (chunk.includes("[")) {
+            response = response + chunk
+
+            if (response.includes("WIFI GOT IP")) {
+                is_connected = true 
+            }
+            if (response.includes("OK")) {
+                is_busy = false
+            } else if (response.includes("FAIL")) {
+                is_busy = false
+            } else if (response.includes("ERROR")) {
+                is_busy = false
+/*            } else if (chunk.includes("[")) {
                 data = chunk.slice(chunk.indexOf("["))
                 response = response + data
+                is_busy = false
             } else if (chunk.includes("]")) {
-                data = chunk
-                response = response + data
-            }            
+                response = response + chunk
+                is_busy = false    */
+            }        
         })
         executeAtCommand("AT+RESTORE", 1000)
         executeAtCommand("AT+RST", 1000)
@@ -86,6 +100,8 @@ namespace WifiModule {
      */
     //% block="Read from Blynk with|Token %blynkKey|Pin %pin"
     export function readBlynkPinValue(blynkKey: string, pin: string): string {        
+        let newLine:string = "\r\n"
+
         if (!isConnected) {
             basic.showIcon(IconNames.No)
             return "Not connected"
@@ -99,7 +115,8 @@ namespace WifiModule {
         let command:string = "GET /" + blynkKey + "/get/" + pin + " HTTP/1.1" + newLine + "Host: blynk-cloud.com" + newLine + newLine
         executeAtCommand("AT+CIPSEND=" + ("" + command.length), 0)
         executeAtCommand(command, 1000)
-        let v = response.slice(response.indexOf("[") + 2, response.indexOf("]") - 1) // Extract value
+        let v = response 
+      //  let v = response.slice(response.indexOf("[") + 2, response.indexOf("]") - 1) // Extract value
         executeAtCommand("AT+CIPCLOSE", 1000)
         is_busy = false
         return v
@@ -113,6 +130,8 @@ namespace WifiModule {
      */
     //% block="Write to Blynk with|Token %blynkKey|Pin %pin|Value %value"
     export function writeBlynkPinValue(blynkKey: string, pin: string, value: string) {
+        let newLine:string = "\r\n"
+        
         if (!isConnected) {
             basic.showIcon(IconNames.No)
             return
