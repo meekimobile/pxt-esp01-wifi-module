@@ -95,8 +95,8 @@ namespace WifiModule {
      */
     //% block="Disconnect WiFi"
     export function disconnectWifi() {
-        executeAtCommand("AT+CWQAP", 1000)
-        //serial.redirectToUSB()
+        executeAtCommand("AT+CWQAP", 2000)
+        serial.redirectToUSB()
     }
 
     /**
@@ -136,7 +136,7 @@ namespace WifiModule {
         executeAtCommand("AT+CIPSEND=" + ("" + command.length), 0)
         executeAtCommand(command, 1000)
         // ISSUE: Missing chunk
-        basic.showString("r" + response.length + ":" + response.substr(response.length - 3))
+        // basic.showString("r" + response.length + ":" + response.substr(response.length - 3))
         let v = ""
         if (response.indexOf("]") >= 0) {
             v = response.slice(response.indexOf("[") + 2, response.indexOf("]") - 1) // Extract value
