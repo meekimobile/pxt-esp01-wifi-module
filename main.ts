@@ -49,7 +49,8 @@ namespace WifiModule {
             while (is_busy && timeout > 0) {
                 basic.pause(100)
                 timeout = timeout - 100
-            }
+            }            
+            response = response + serial.readBuffer(0).toString()   // Workaround: try read what left in buffer.
             basic.pause(waitMs)
         } else {
             basic.showIcon(IconNames.No)
@@ -76,6 +77,7 @@ namespace WifiModule {
         } else if (response.includes("SEND FAIL")) {
             response = response.substr(response.indexOf("SEND FAIL") + 8)
         } else if (response.includes("ERROR")) {
+            is_connected = false
             is_busy = false
         } else if (response.includes("+IPD,")) {
             let start = response.indexOf("+IPD,") + 5
