@@ -74,7 +74,7 @@ namespace WifiModule {
         } else if (response.includes("SEND OK")) {
             response = response.substr(response.indexOf("SEND OK") + 8)
         } else if (response.includes("SEND FAIL")) {
-            response = response.substr(response.indexOf("SEND OK") + 8)
+            response = response.substr(response.indexOf("SEND FAIL") + 8)
         } else if (response.includes("ERROR")) {
             is_busy = false
         } else if (response.includes("+IPD,")) {
@@ -161,7 +161,6 @@ namespace WifiModule {
         executeAtCommand(command, 1000)
         if (debugging) {
             basic.showString("c" + response.length + ":" + response.substr(response.length - 3) + ".")
-            basic.pause(1000)
         }
         let v = "?"
         if (response.indexOf("]") >= 0) {
@@ -192,6 +191,9 @@ namespace WifiModule {
         let command: string = "GET /" + blynkKey + "/update/" + pin + "?value=" + ("" + value) + " HTTP/1.1" + newLine + "Host: blynk-cloud.com" + newLine + newLine
         executeAtCommand("AT+CIPSEND=" + ("" + command.length), 0)
         executeAtCommand(command, 1000)
+        if (debugging) {
+            basic.showString("c" + response.length + ":" + response.substr(response.length - 3) + ".")
+        }
         executeAtCommand("AT+CIPCLOSE", 1000)
     }
 
