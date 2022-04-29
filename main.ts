@@ -158,7 +158,7 @@ namespace WifiModule {
             return ""
         }
         executeAtCommand("AT+CIPSTART=\"TCP\",\"blynk-cloud.com\",80", 1000)
-        let command: string = "GET /" + blynkKey + "/get/" + pin + " HTTP/1.1" + newLine + "Host: blynk-cloud.com" + newLine + newLine
+        let command: string = "GET /external/api/get?token=" + blynkKey + "&" + pin + " HTTP/1.1" + newLine + "Host: blynk-cloud.com" + newLine + newLine
         executeAtCommand("AT+CIPSEND=" + ("" + command.length), 0)
         executeAtCommand(command, 1000)
         if (debugging) {
@@ -190,7 +190,7 @@ namespace WifiModule {
             return
         }
         executeAtCommand("AT+CIPSTART=\"TCP\",\"blynk-cloud.com\",80", 1000)
-        let command: string = "GET /" + blynkKey + "/update/" + pin + "?value=" + ("" + value) + " HTTP/1.1" + newLine + "Host: blynk-cloud.com" + newLine + newLine
+        let command: string = "GET /external/api/update?token=" + blynkKey + "&" + pin + "=" + ("" + value) + " HTTP/1.1" + newLine + "Host: blynk-cloud.com" + newLine + newLine
         executeAtCommand("AT+CIPSEND=" + ("" + command.length), 0)
         executeAtCommand(command, 1000)
         if (debugging) {
