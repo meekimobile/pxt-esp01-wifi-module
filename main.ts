@@ -158,7 +158,7 @@ namespace WifiModule {
             return ""
         }
         executeAtCommand("AT+CIPSTART=\"TCP\",\"blynk.cloud\",80", 1000)
-        let command: string = "GET /external/api/get?token=" + blynkKey + "&" + pin + " HTTP/1.1" + newLine + "Host: blynk-cloud.com" + newLine + newLine
+        let command: string = "GET /external/api/get?token=" + blynkKey + "&" + pin + " HTTP/1.1" + newLine + "Host: blynk.cloud" + newLine + newLine
         executeAtCommand("AT+CIPSEND=" + ("" + command.length), 0)
         executeAtCommand(command, 1000)
         if (debugging) {
@@ -190,13 +190,47 @@ namespace WifiModule {
             return
         }
         executeAtCommand("AT+CIPSTART=\"TCP\",\"blynk.cloud\",80", 1000)
-        let command: string = "GET /external/api/update?token=" + blynkKey + "&" + pin + "=" + ("" + value) + " HTTP/1.1" + newLine + "Host: blynk-cloud.com" + newLine + newLine
+        let command: string = "GET /external/api/update?token=" + blynkKey + "&" + pin + "=" + ("" + value) + " HTTP/1.1" + newLine + "Host: blynk.cloud" + newLine + newLine
         executeAtCommand("AT+CIPSEND=" + ("" + command.length), 0)
         executeAtCommand(command, 1000)
         if (debugging) {
             basic.showString("c" + response.length + ":" + response.substr(response.length - 3) + ".")
         }
         executeAtCommand("AT+CIPCLOSE", 1000)
+    }
+
+    /**
+     * Perform HTTP GET request
+     * @param url URL
+     */
+    //% block="Perform HTTP GET|URL %url"
+    export function httpGet(url: string): string {
+        let newLine: string = "\r\n"
+
+        if (!isConnected) {
+            basic.showIcon(IconNames.No)
+            return "Not connected"
+        }
+        if (is_busy) {
+            return ""
+        }
+        let hostPath = url.substr(7)
+        let host = hostPath.substr(0, hostPath.indexOf("/"))
+        let path = hostPath.substr(hostPath.indexOf("/"))
+        executeAtCommand("AT+CIPSTART=\"TCP\",\"" + host + "\",80", 1000)
+        let command: string = "GET " + path + " HTTP/1.1" + newLine + "Host: " + host + newLine + newLine
+        executeAtCommand("AT+CIPSEND=" + ("" + command.length), 0)
+        executeAtCommand(command, 1000)
+        if (debugging) {
+            basic.showString("c" + response.length + ":" + response.substr(response.length - 3) + ".")
+        }
+        let v = "?"
+        if (response.length > 0) {
+            let i = response.indexOf("content-length:")
+            v = response.substr(i + 20)
+        }
+        executeAtCommand("AT+CIPCLOSE", 1000)
+        return v
     }
 
 }
