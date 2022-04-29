@@ -167,6 +167,8 @@ namespace WifiModule {
         let v = "?"
         if (response.indexOf("]") >= 0) {
             v = response.slice(response.indexOf("[") + 2, response.indexOf("]") - 1) // Extract value
+        } else {
+            v = response;
         }
         executeAtCommand("AT+CIPCLOSE", 1000)
         return v
