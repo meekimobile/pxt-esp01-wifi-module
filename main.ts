@@ -165,11 +165,11 @@ namespace WifiModule {
     }
 
     /**
-     * Run on response
+     * Run on AT response received
      * @param cb Action
      */
-    //% block="Run code on data received"
-    export function onDataReceived(cb: Action) {
+    //% block="Run code on AT response received"
+    export function onATResponseReceived(cb: Action) {
         responseCallback = cb
     }
 
