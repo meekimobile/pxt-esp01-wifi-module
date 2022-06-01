@@ -48,12 +48,12 @@ namespace WifiModule {
     }
 
     /**
-     * Receive and parse MQTT message
+     * Receive and parse MQTT message?
      * Used in loop to parse every 2+ seconds.
      */
     //% subcategory="MQTT"
     //% weight=35
-    //% block="Receive MQTT message"
+    //% block="Received MQTT message?"
     export function receiveMQTTMessage() : boolean {
         if (WifiModule.isBusy()) {
             return false
