@@ -4,4 +4,9 @@
 //
 basic.showIcon(IconNames.Confused)
 basic.pause(3000)
-basic.clearScreen()
+WifiModule.connectWifi(SerialPin.P2, SerialPin.P1, "mSPACE", "*****")
+if (WifiModule.isConnected()) {
+    basic.showIcon(IconNames.Happy)
+} else {
+    basic.showString(WifiModule.getError())
+}
